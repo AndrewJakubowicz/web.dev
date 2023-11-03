@@ -38,13 +38,13 @@ In order to better understand the architectures we're choosing from when we make
 
 _Server-side rendering generates the full HTML for a page on the server in response to navigation. This avoids additional round-trips for data fetching and templating on the client, since it's handled before the browser gets a response._
 
-Server-side rendering generally produces a fast FCP. Running page logic and rendering on the server makes it possible to avoid sending lots of JavaScript to the client. This helps to reduce a page's TBT, which can also lead to a lower INP, as the main thread is not blocked as often during page load. When the main thread is blocked less often, user interactions will have more opportunities run sooner. This makes sense, since with server-side rendering, you're really just sending text and links to the user's browser. This approach can work well for a large spectrum of device and network conditions, and opens up interesting browser optimizations like streaming document parsing.
+Server-side rendering generally produces a fast FCP. Running page logic and rendering on the server makes it possible to avoid sending lots of JavaScript to the client. This helps to reduce a page's TBT, which can also lead to a lower INP, as the main thread is not blocked as often during page load. When the main thread is blocked less often, user interactions will have more opportunities to run sooner. This makes sense, since with server-side rendering, you're really just sending text and links to the user's browser. This approach can work well for a large spectrum of device and network conditions, and opens up interesting browser optimizations like streaming document parsing.
 
 <figure>
   {% Img src="image/T4FyVKpzu4WKF1kBNvXepbi08t52/WOL6PIpIQHpqsgtKwbJv.png", alt="Diagram showing server-side rendering and JS execution affecting FCP and TTI.", width="800", height="494" %}
 </figure>
 
-With server-side rendering, users are less likely to be left waiting for CPU-bound JavaScript to run before they can use your site. Even where [third-party JS](/optimizing-content-efficiency-loading-third-party-javascript/) can't be avoided, using server-side rendering to reduce your own first-party [JavaScript costs](https://medium.com/@addyosmani/the-cost-of-javascript-in-2018-7d8950fbb5d4) can give you more [budget](https://medium.com/@addyosmani/start-performance-budgeting-dabde04cf6a3) for the rest. However, there is one potential trade-off with this approach: generating pages on the server takes time, which can may result in a higher TTFB.
+With server-side rendering, users are less likely to be left waiting for CPU-bound JavaScript to run before they can use your site. Even where [third-party JS](/optimizing-content-efficiency-loading-third-party-javascript/) can't be avoided, using server-side rendering to reduce your own first-party [JavaScript costs](https://medium.com/@addyosmani/the-cost-of-javascript-in-2018-7d8950fbb5d4) can give you more [budget](https://medium.com/@addyosmani/start-performance-budgeting-dabde04cf6a3) for the rest. However, there is one potential trade-off with this approach: generating pages on the server takes time, which may result in a higher TTFB.
 
 Whether server-side rendering is enough for your application largely depends on what type of experience you are building. There is a long-standing debate over the correct applications of server-side rendering versus client-side rendering, but it's important to remember that you can opt to use server-side rendering for some pages and not others. Some sites have adopted hybrid rendering techniques with success. [Netflix](https://medium.com/dev-channel/a-netflix-web-performance-case-study-c0bcde26a9d9) server-renders its relatively static landing pages, while [prefetching](https://dev.to/addyosmani/speed-up-next-page-navigations-with-prefetching-4285) the JS for interaction-heavy pages, giving these heavier client-rendered pages a better chance of loading quickly.
 
@@ -52,7 +52,7 @@ Many modern frameworks, libraries and architectures make it possible to render t
 
 ## Static rendering
 
-[Static rendering](https://frontarm.com/articles/static-vs-server-rendering/) happens at build-time. This apporach offers a fast FCP, and also a lower TBT and INP—assuming the amount of client-side JS is limited. Unlike server-side rendering, it also manages to achieve a consistently fast TTFB, since the HTML for a page doesn't have to be dynamically generated on the server. Generally, static rendering means producing a separate HTML file for each URL ahead of time. With HTML responses generated in advance, static renders can be deployed to multiple CDNs to take advantage of edge caching.
+[Static rendering](https://frontarm.com/articles/static-vs-server-rendering/) happens at build-time. This approach offers a fast FCP, and also a lower TBT and INP—assuming the amount of client-side JS is limited. Unlike server-side rendering, it also manages to achieve a consistently fast TTFB, since the HTML for a page doesn't have to be dynamically generated on the server. Generally, static rendering means producing a separate HTML file for each URL ahead of time. With HTML responses generated in advance, static renders can be deployed to multiple CDNs to take advantage of edge caching.
 
 <figure>
   {% Img src="image/T4FyVKpzu4WKF1kBNvXepbi08t52/SRsl2UcHyJquzuJkdTHR.png", alt="Diagram showing static rendering and optional JS execution affecting FCP and TTI.", width="800", height="613" %}
@@ -84,7 +84,7 @@ Server-side rendering can also present interesting decisions when building a [PW
 
 ## Client-side rendering
 
-Client-side rendering means rendering pages directly in the browser with JavaScript. All logic, data fetching, templating and routing are handled on the client rather than the server. The effective outcome is that more passed to the user's device from the server, and that comes with its own set of trade-offs.
+Client-side rendering means rendering pages directly in the browser with JavaScript. All logic, data fetching, templating and routing are handled on the client rather than the server. The effective outcome is that more data is passed to the user's device from the server, and that comes with its own set of trade-offs.
 
 Client-side rendering can be difficult to get and keep fast for mobile devices. If minimal work is done, client-side rendering can approach the performance of pure server-side rendering, keeping a [tight JavaScript budget](https://mobile.twitter.com/HenrikJoreteg/status/1039744716210950144) and delivering value in as few [round-trips](https://en.wikipedia.org/wiki/Round-trip_delay_time) as possible. Critical scripts and data can be delivered sooner using `<link rel=preload>`, which gets the parser working for you sooner. Patterns like [PRPL](/apply-instant-loading-with-prpl/) are also worth evaluating in order to ensure initial and subsequent navigations feel instant.
 
@@ -104,7 +104,7 @@ This approach attempts to smooth over the trade-offs between client-side renderi
 
 The primary downside of server-side rendering with rehydration is that it can have a significant negative impact on TBT and INP, even if it improves FCP. Server-side rendered pages can deceptively appear to be loaded and interactive, but can't actually respond to input until the client-side scripts for components are executed and event handlers have been attached. This can take seconds or even minutes on mobile.
 
-Perhaps you've experienced this yourself—for a period of time after it looks like a page has loaded, clicking or tapping does nothing. This quickly becoming frustrating, as the user is left to wonder why nothing is happening when they try to interact with the page.
+Perhaps you've experienced this yourself—for a period of time after it looks like a page has loaded, clicking or tapping does nothing. This quickly becomes frustrating, as the user is left to wonder why nothing is happening when they try to interact with the page.
 
 ### A rehydration problem: one app for the price of two
 
@@ -151,9 +151,9 @@ If [service workers](https://developer.chrome.com/docs/workbox/service-worker-ov
 
 ## SEO considerations
 
-Teams often factor in the impact of SEO when choosing a strategy for rendering on the web. Server-side rendering is often chosen for delivering a "complete looking" experience crawlers can interpret with ease. Crawlers [may understand JavaScript](/discoverable/how-search-works), but there are often [limitations](https://developers.google.com/search/docs/guides/rendering) worth being aware of in how they render. Client-side rendering can work, but often not without additional testing and leg-work. More recently, [dynamic rendering](https://developers.google.com/search/docs/advanced/javascript/dynamic-rendering) has also become an option worth considering if your architecture depends heavily on client-side JavaScript.
+Teams often factor in the impact of SEO when choosing a strategy for rendering on the web. Server-side rendering is often chosen for delivering a "complete looking" experience that crawlers can interpret with ease. Crawlers [may understand JavaScript](/discoverable/how-search-works), but there are often [limitations](https://developers.google.com/search/docs/guides/rendering) worth being aware of in how they render. Client-side rendering can work, but often not without additional testing and leg-work. More recently, [dynamic rendering](https://developers.google.com/search/docs/advanced/javascript/dynamic-rendering) has also become an option worth considering if your architecture depends heavily on client-side JavaScript.
 
-When in doubt, the [mobile friendly test tool](https://search.google.com/test/mobile-friendly) is invaluable for testing that your chosen approach does what you're hoping for. It shows a visual preview of how any page appears to Google's crawler, the serialized HTML content found (after JavaScript executed), and any errors encountered during rendering.
+When in doubt, the [mobile friendly test tool](https://search.google.com/test/mobile-friendly) is invaluable for testing that your chosen approach does what you're hoping for. It shows a visual preview of how any page appears to Google's crawler, the serialized HTML content found (after JavaScript is executed), and any errors encountered during rendering.
 
 <figure>
   {% Img src="image/T4FyVKpzu4WKF1kBNvXepbi08t52/2OH46CfDEvODtabXpKZp.png", alt="Screenshot of the Mobile Friendly Test UI.", width="800", height="817" %}
